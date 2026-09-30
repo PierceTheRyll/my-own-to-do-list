@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0a0a0c">
-<title>My To Do List</title>
+<title>MyNote</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap" rel="stylesheet">
 <style>
@@ -33,9 +33,9 @@ h1{margin:6px 0 4px;font-size:27px;line-height:1.15}
 #fill{height:100%;width:0;border-radius:3px;background:linear-gradient(90deg,var(--p),var(--pl));transition:width .55s cubic-bezier(.3,.9,.3,1)}
 .add{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 20px;border-radius:28px;background:var(--in);border:1px solid var(--bd);margin-bottom:12px;transition:border-color .25s,box-shadow .25s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .add:focus-within{border-color:var(--pl);box-shadow:0 0 0 3px rgba(167,139,250,.2)}
-#inp{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--t);font:inherit;font-size:16px}
-#inp::placeholder{color:var(--m)}
-#go{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.1);font-size:24px;line-height:1}
+#inp,#dt{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--t);font:inherit;font-size:16px}
+#inp::placeholder,#dt::placeholder{color:var(--m)}
+#go,#dgo{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.1);font-size:24px;line-height:1}
 .tabs{margin-bottom:14px}
 #panel{position:relative;flex:none;height:min(50vh,440px);min-height:260px;overflow-y:auto;scrollbar-width:none;padding:12px;border-radius:28px;background:var(--gl);border:1px solid var(--bd);
 backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 24px 50px rgba(0,0,0,.3)}
@@ -123,28 +123,93 @@ background:linear-gradient(100deg,#fff 0%,#c4b5fd 35%,#8b5cf6 65%,#fff 100%);bac
 @media(min-width:860px){#app{max-width:1040px;height:100%}
 #main{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr);gap:22px}
 #tasks,#notes{min-height:0}#panel{flex:1;height:auto;min-height:0}#notes{margin-top:34px}}
+.hi{margin:2px 0 0;font-size:14px;color:var(--m)}
+.hi b{font-weight:700;background:linear-gradient(90deg,var(--pl),#ddd6fe);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dbtn{position:relative;flex:none;display:flex;align-items:center;gap:5px;height:42px;padding:0 11px;border-radius:21px;color:var(--m);transition:color .3s,background-color .5s}
+.dbtn:hover{color:var(--pl)}.dbtn.set{background:rgba(139,92,246,.2);color:var(--pl)}
+#dl{font-size:12px;font-weight:600}
+#due{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.dd{flex:none;padding:3px 9px;border-radius:10px;font-size:12px;font-weight:600;background:rgba(139,92,246,.18);color:var(--pl)}
+.dd:empty{display:none}.dd.td{background:rgba(251,191,36,.16);color:#fcd34d}.dd.od{background:rgba(248,113,113,.18);color:#fca5a5}
+#err.ok{color:#86efac}
+.lnk{display:block;margin:12px auto 0;padding:6px;font-size:13px;color:var(--pl);text-decoration:underline;text-underline-offset:3px;transition:color .3s}.lnk:hover{color:#fff}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:6;max-width:min(92vw,420px);padding:12px 18px;border-radius:18px;background:rgba(30,30,35,.88);border:1px solid var(--bd);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:14px;animation:tin .4s cubic-bezier(.2,.8,.2,1)}
+.toast.out{opacity:0;transform:translate(-50%,10px);transition:opacity .4s,transform .4s}
+@keyframes tin{from{opacity:0;transform:translate(-50%,14px)}}
+header{flex-wrap:wrap;row-gap:10px}.hr{margin-left:auto}
+.me{width:38px;padding:0;justify-content:center}.me svg{display:none}
+.ic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--in);border:1px solid var(--bd);color:var(--m)}
+.thb .sun{display:none}[data-theme="light"] .thb .moon{display:none}[data-theme="light"] .thb .sun{display:block}
+:root{color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light;--t:#1b1a22;--m:#6a6a78;--p:#7c3aed;--pl:#6d28d9;--gl:rgba(255,255,255,.66);--bd:rgba(30,20,60,.12);--in:rgba(255,255,255,.8);--row:rgba(255,255,255,.8)}
+[data-theme="light"] body{background:radial-gradient(circle at 90% 0%,rgba(167,139,250,.55),transparent 45%),radial-gradient(circle at 0% 100%,rgba(196,181,253,.6),transparent 50%),linear-gradient(#f6f5fa,#e6e3f0) #f1f0f6;background-attachment:fixed}
+[data-theme="light"] .track{background:rgba(30,20,60,.1)}[data-theme="light"] .row{border-color:rgba(30,20,60,.08)}[data-theme="light"] .row:hover{background:#fff}
+[data-theme="light"] :is(#go,#dgo,#submit,.acts .b,.gn .b,.x,.em button,.pre button,#guest){background:rgba(30,20,60,.07)}
+[data-theme="light"] .seg button.on{color:#fff}[data-theme="light"] .seg button:not(.on):hover{color:var(--t)}
+[data-theme="light"] .wm{background-image:linear-gradient(100deg,#4c1d95,#7c3aed 40%,#a78bfa 70%,#4c1d95)}
+[data-theme="light"] .dd.td{color:#b45309;background:rgba(245,158,11,.18)}[data-theme="light"] .dd.od{color:#b91c1c;background:rgba(239,68,68,.15)}
+[data-theme="light"] .toast{background:rgba(255,255,255,.94)}[data-theme="light"] .rbg{stroke:rgba(30,20,60,.1)}[data-theme="light"] #prof{background:rgba(255,255,255,.4)}
+[data-theme="light"] :is(#panel,#notes,.card,.gl){box-shadow:inset 0 1px 0 #fff,0 20px 46px rgba(60,40,120,.15)}
+.tt *{transition:background-color .5s,color .5s,border-color .5s}
+.nav{max-width:560px;width:100%;margin:0 auto 18px}
+.nav button{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 6px;font-size:14px}.nav svg{flex:none}
+.vin{animation:vin .55s cubic-bezier(.2,.8,.2,1) backwards}@keyframes vin{from{opacity:0;transform:translateX(var(--dx,0))}}
+.gl{background:var(--gl);border:1px solid var(--bd);border-radius:28px;-webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 24px 50px rgba(0,0,0,.3)}
+.vw{width:100%;max-width:720px;margin:0 auto}#v-dl{display:flex;flex-direction:column;gap:14px}#v-tm{max-width:480px}
+.dlf{flex-wrap:wrap;border-radius:26px;margin-bottom:0}#dt{min-width:150px}
+#dd2{flex:none;width:132px;background:none;border:0;border-left:1px solid var(--bd);outline:0;color:var(--t);font:inherit;font-size:14px;padding-left:8px}
+#dpanel{position:relative;padding:14px;min-height:280px}
+.sec{margin:12px 6px 8px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--m)}.sec:first-child{margin-top:2px}
+#dlist li{animation:li2 .5s cubic-bezier(.2,.8,.2,1) backwards}@keyframes li2{from{opacity:0;transform:translateY(10px)}}
+.dr{height:auto;min-height:60px;padding-top:8px;padding-bottom:8px}.tx{flex:1;min-width:0;display:flex;flex-direction:column}.tx .txt{flex:none}.mt{color:var(--m);font-size:12px}
+#dempty{position:absolute;inset:0;display:grid;place-items:center;padding:20px;text-align:center;color:var(--m);opacity:0;pointer-events:none;transition:opacity .5s}#dempty.show{opacity:1}
+.tmcard{padding:22px 20px}.tmw{position:relative;width:min(260px,72vw);margin:6px auto 16px}
+.rbg{fill:none;stroke:rgba(255,255,255,.1);stroke-width:10}.rfg{fill:none;stroke:url(#rg);stroke-width:10;stroke-linecap:round;filter:drop-shadow(0 0 8px rgba(139,92,246,.6))}
+.tmc{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.tmt{font:800 48px/1 "Bricolage Grotesque","Arial Black",sans-serif;font-variant-numeric:tabular-nums}.tmlab{margin-top:6px;font-size:13px;color:var(--m);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tmw.pulse{animation:pls 1.2s ease 2}@keyframes pls{50%{transform:scale(1.05);filter:drop-shadow(0 0 24px rgba(139,92,246,.8))}}
+.pre{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}.pre button{padding:8px 14px;border-radius:14px;background:rgba(255,255,255,.08);font-weight:600;font-size:13px}.pre button.on{outline:2px solid var(--pl)}
+#tgo{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;border-color:transparent}
+@media(min-width:860px){.vw{flex:1;min-height:0}#dpanel{flex:1;min-height:0;overflow-y:auto}#v-tm{overflow-y:auto}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("tg_theme")||"dark"}catch(e){}</script>
 </head>
 <body>
 <div id="app" class="locked">
   <header>
-    <div><h1 data-i="title">Tugas Saya</h1><div class="sn">My To Do List</div><div id="sub"></div></div>
-    <div class="hr"><button class="me b" id="lo" aria-label="profile"><b id="av"></b><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button><div class="seg lang" id="lang"><i></i><button data-l="id">ID</button><button data-l="en">EN</button></div></div>
+    <div><div id="hi" class="hi"></div><h1 data-i="title">Tugas Saya</h1><div class="sn">MyNote</div><div id="sub"></div></div>
+    <div class="hr"><button class="ic b thb" aria-label="theme"><svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><button class="me b" id="lo" aria-label="profile"><b id="av"></b><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button><div class="seg lang" id="lang"><i></i><button data-l="id">ID</button><button data-l="en">EN</button></div></div>
   </header>
+  <nav class="seg nav" id="nav" style="--n:3"><i></i>
+    <button data-v="0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span data-i="n0"></span></button>
+    <button data-v="1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M8 12h8M8 16h5"/></svg><span data-i="n1"></span></button>
+    <button data-v="2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg><span data-i="n2"></span></button></nav>
   <div id="main"><div id="tasks">
   <div class="track"><div id="fill"></div></div>
-  <div class="add"><input id="inp" autocomplete="off" maxlength="120"><button id="go" class="b" aria-label="add">+</button></div>
+  <div class="add"><input id="inp" autocomplete="off" maxlength="120"><button type="button" id="dbtn" class="dbtn" aria-label="due date"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span id="dl"></span><input type="date" id="due" tabindex="-1"></button><button id="go" class="b" aria-label="add">+</button></div>
   <div class="seg tabs" id="tabs" style="--n:3"><i></i><button data-f="0" data-i="t0"></button><button data-f="1" data-i="t1"></button><button data-f="2" data-i="t2"></button></div>
   <div id="gn" class="gn" hidden><span data-i="gnote"></span><button class="b" id="gup" data-i="m2"></button></div>
   <div id="panel"><ul id="list"></ul><div id="empty" data-i="empty"></div></div>
   </div>
   <aside id="notes"><div class="nh"><span data-i="nt"></span><span class="ns" id="ns" data-i="ns1"></span></div><textarea id="nb" data-p="np" maxlength="4000" spellcheck="false"></textarea></aside>
   </div>
+<section id="v-dl" class="vw" hidden>
+  <div class="add dlf"><input id="dt" data-p="dtp" maxlength="120" autocomplete="off"><input type="date" id="dd2"><button id="dgo" class="b" aria-label="add">+</button></div>
+  <div id="dpanel" class="gl"><div id="dlist"></div><div id="dempty" data-i="de"></div></div>
+</section>
+<section id="v-tm" class="vw" hidden><div class="gl tmcard">
+  <div class="tmw" id="tmw"><svg viewBox="0 0 220 220"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs><circle class="rbg" cx="110" cy="110" r="96"/><circle id="ring" class="rfg" cx="110" cy="110" r="96" transform="rotate(-90 110 110)"/></svg>
+  <div class="tmc"><div id="tmt" class="tmt">25:00</div><div id="tmlab" class="tmlab"></div></div></div>
+  <label class="fld"><input id="tml" data-p="tml" maxlength="40" autocomplete="off"></label>
+  <div class="pre" id="pre"><button class="b" data-m="5">5</button><button class="b" data-m="15">15</button><button class="b" data-m="25">25</button><button class="b" data-m="45">45</button><button class="b" data-m="60">60</button></div>
+  <label class="fld"><input id="tmm" type="number" min="1" max="999" value="25" inputmode="numeric"><span class="ns" data-i="tmn"></span></label>
+  <div class="acts"><button class="b" id="tgo" data-i="tm0"></button><button class="b" id="trs" data-i="tm2"></button></div>
+</div></section>
 </div>
 <div id="auth" class="out" hidden><div id="card" class="card">
-<div class="top"><div class="brand"><b>✓</b></div><div class="seg lang" id="lang2"><i></i><button data-l="id">ID</button><button data-l="en">EN</button></div></div>
-<div class="wm">My To Do List</div>
+<div class="top"><div class="brand"><b>✓</b></div><div class="hr"><button class="ic b thb" aria-label="theme"><svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="seg lang" id="lang2"><i></i><button data-l="id">ID</button><button data-l="en">EN</button></div></div></div>
+<div class="wm">MyNote</div>
 <h2 id="ttl" data-i="a1"></h2><p id="tts" data-i="a1s"></p>
 <div class="seg" id="mode"><i></i><button type="button" data-m="0" data-i="m1"></button><button type="button" data-m="1" data-i="m2"></button></div>
 <form id="f" novalidate>
@@ -155,6 +220,7 @@ background:linear-gradient(100deg,#fff 0%,#c4b5fd 35%,#8b5cf6 65%,#fff 100%);bac
 <button id="submit" class="b" data-i="b1"></button></form>
 <div class="or"><span data-i="or"></span></div>
 <button id="guest" class="b" type="button" data-i="gb"></button>
+<button id="rst" class="lnk" type="button" data-i="rs"></button>
 <small data-i="note"></small></div></div>
 <div id="prof" class="out" hidden><div class="card" id="pcard">
 <div class="top"><b class="ptitle" data-i="pt"></b><button class="x b" id="px" aria-label="close">✕</button></div>
@@ -162,14 +228,17 @@ background:linear-gradient(100deg,#fff 0%,#c4b5fd 35%,#8b5cf6 65%,#fff 100%);bac
 <label class="fld"><input id="pn" data-p="pnm" maxlength="24" autocomplete="off"></label>
 <div class="lbl" data-i="pcol"></div><div class="sw" id="sw"></div>
 <div class="lbl" data-i="pem"></div><div class="em" id="em"></div>
+<div id="pa3" class="acts"><button class="b" id="pex" data-i="ex"></button><button class="b" id="pim" data-i="im"></button></div>
 <div id="pa1" class="acts"><button class="b" id="pd" data-i="t2"></button><button class="b" id="plo" data-i="lo"></button></div>
 <div id="pa2" hidden><p class="pn" data-i="gnote"></p><div class="acts"><button class="b" id="pin" data-i="m1"></button><button class="b" id="pup" data-i="m2"></button></div></div>
 </div></div>
+<div id="toast" class="toast" hidden></div>
+<input type="file" id="fi" accept=".json,application/json" hidden>
 <script>
 const $=s=>document.querySelector(s);
 const STR={
- id:{nt:"Catatan",np:"Tulis catatanmu di sini…",ns1:"Tersimpan",ns2:"Tidak disimpan (tamu)",ns3:"Menyimpan…",gb:"Lanjut sebagai tamu",or:"atau",gnote:"Mode tamu: tugas tidak disimpan.",guest:"Tamu",pt:"Profil",pnm:"Nama tampilan",pcol:"Warna avatar",pem:"Ikon avatar",lo:"Keluar",a1:"Selamat datang kembali",a1s:"Masuk untuk membuka daftar tugasmu.",a2:"Buat akun",a2s:"Daftar dalam hitungan detik.",m1:"Masuk",m2:"Daftar",b1:"Masuk",b2:"Buat akun",pu:"Nama pengguna",pp:"Kata sandi",pc:"Ulangi kata sandi",sh:"Lihat",hd:"Sembunyi",note:"Akun hanya tersimpan di browser ini.",e1:"Nama pengguna 3–20 karakter (huruf, angka, _ .).",e2:"Kata sandi minimal 6 karakter.",e3:"Kata sandi tidak sama.",e4:"Nama pengguna sudah dipakai.",e5:"Nama pengguna atau kata sandi salah.",e6:"Browser ini tidak mendukung login aman (butuh HTTPS).",title:"Tugas Saya",stats:"{a} aktif · {d} selesai",ph:"Tambah tugas baru…",t0:"Semua",t1:"Aktif",t2:"Selesai",empty:"Belum ada tugas\nKetik sesuatu di atas ✨"},
- en:{nt:"Notes",np:"Write your notes here…",ns1:"Saved",ns2:"Not saved (guest)",ns3:"Saving…",gb:"Continue as guest",or:"or",gnote:"Guest mode: tasks aren't saved.",guest:"Guest",pt:"Profile",pnm:"Display name",pcol:"Avatar color",pem:"Avatar icon",lo:"Log out",a1:"Welcome back",a1s:"Sign in to open your task list.",a2:"Create account",a2s:"Sign up in seconds.",m1:"Sign in",m2:"Sign up",b1:"Sign in",b2:"Create account",pu:"Username",pp:"Password",pc:"Confirm password",sh:"Show",hd:"Hide",note:"Accounts are stored in this browser only.",e1:"Username: 3–20 characters (letters, numbers, _ .).",e2:"Password must be at least 6 characters.",e3:"Passwords don't match.",e4:"That username is taken.",e5:"Wrong username or password.",e6:"Secure login isn't supported here (needs HTTPS).",title:"My Tasks",stats:"{a} active · {d} done",ph:"Add a new task…",t0:"All",t1:"Active",t2:"Done",empty:"No tasks yet\nType something above ✨"}};
+ id:{n0:"Deadline",n1:"Note",n2:"Timer",dg0:"Terlambat",dg1:"Hari ini",dg2:"Minggu ini",dg3:"Nanti",de:"Belum ada deadline. Tambahkan nama dan tanggal di atas.",dtp:"Nama deadline…",tm0:"Mulai",tm1:"Jeda",tm2:"Reset",tmn:"menit",tml:"Untuk apa timer ini?",tmd:"Waktu habis!",ex:"Ekspor cadangan",im:"Impor cadangan",rs:"Pulihkan dari cadangan",xm:"Cadangan tersimpan. Simpan file ini dengan aman.",m1:"Cadangan dipulihkan. Masukkan kata sandi untuk masuk.",m2:"Cadangan dipulihkan.",e7:"File cadangan tidak valid.",e8:"Akun ini belum ada di perangkat ini. Akun tersimpan per perangkat: daftar di sini, atau pulihkan dari cadangan.",cf:"Ini akan menimpa data akun ini di perangkat ini. Lanjutkan?",r1:"Jatuh tempo hari ini: {t} · terlambat: {o}",nt:"Catatan",np:"Tulis catatanmu di sini…",ns1:"Tersimpan",ns2:"Tidak disimpan (tamu)",ns3:"Menyimpan…",gb:"Lanjut sebagai tamu",or:"atau",gnote:"Mode tamu: tugas tidak disimpan.",guest:"Tamu",pt:"Profil",pnm:"Nama tampilan",pcol:"Warna avatar",pem:"Ikon avatar",lo:"Keluar",a1:"Selamat datang kembali",a1s:"Masuk untuk membuka daftar tugasmu.",a2:"Buat akun",a2s:"Daftar dalam hitungan detik.",m1:"Masuk",m2:"Daftar",b1:"Masuk",b2:"Buat akun",pu:"Nama pengguna",pp:"Kata sandi",pc:"Ulangi kata sandi",sh:"Lihat",hd:"Sembunyi",note:"Akun hanya tersimpan di browser ini.",e1:"Nama pengguna 3–20 karakter (huruf, angka, _ .).",e2:"Kata sandi minimal 6 karakter.",e3:"Kata sandi tidak sama.",e4:"Nama pengguna sudah dipakai.",e5:"Nama pengguna atau kata sandi salah.",e6:"Browser ini tidak mendukung login aman (butuh HTTPS).",title:"Tugas Saya",stats:"{a} aktif · {d} selesai",ph:"Tambah tugas baru…",t0:"Semua",t1:"Aktif",t2:"Selesai",empty:"Belum ada tugas\nKetik sesuatu di atas ✨"},
+ en:{n0:"Deadline",n1:"Note",n2:"Timer",dg0:"Overdue",dg1:"Today",dg2:"This week",dg3:"Later",de:"No deadlines yet. Add a name and date above.",dtp:"Deadline name…",tm0:"Start",tm1:"Pause",tm2:"Reset",tmn:"min",tml:"What's this timer for?",tmd:"Time's up!",ex:"Export backup",im:"Import backup",rs:"Restore from backup",xm:"Backup saved. Keep the file private.",m1:"Backup restored. Enter your password to sign in.",m2:"Backup restored.",e7:"That isn't a valid backup file.",e8:"No account with this name on this device. Accounts are saved per device: sign up here, or restore from a backup.",cf:"This will replace this account's data on this device. Continue?",r1:"Due today: {t} · overdue: {o}",nt:"Notes",np:"Write your notes here…",ns1:"Saved",ns2:"Not saved (guest)",ns3:"Saving…",gb:"Continue as guest",or:"or",gnote:"Guest mode: tasks aren't saved.",guest:"Guest",pt:"Profile",pnm:"Display name",pcol:"Avatar color",pem:"Avatar icon",lo:"Log out",a1:"Welcome back",a1s:"Sign in to open your task list.",a2:"Create account",a2s:"Sign up in seconds.",m1:"Sign in",m2:"Sign up",b1:"Sign in",b2:"Create account",pu:"Username",pp:"Password",pc:"Confirm password",sh:"Show",hd:"Hide",note:"Accounts are stored in this browser only.",e1:"Username: 3–20 characters (letters, numbers, _ .).",e2:"Password must be at least 6 characters.",e3:"Passwords don't match.",e4:"That username is taken.",e5:"Wrong username or password.",e6:"Secure login isn't supported here (needs HTTPS).",title:"My Tasks",stats:"{a} active · {d} done",ph:"Add a new task…",t0:"All",t1:"Active",t2:"Done",empty:"No tasks yet\nType something above ✨"}};
 const S={tasks:[],lang:null,filter:0,user:null,legacy:[]};
 try{const d=JSON.parse(localStorage.getItem("tg")||"{}");S.legacy=d.tasks||[];S.lang=d.lang}catch(e){}
 if(!STR[S.lang])S.lang=(navigator.language||"").startsWith("id")?"id":"en";
@@ -186,10 +255,10 @@ const empty=()=>$("#empty").classList.toggle("show",!list.children.length);
 
 function row(t,delay=0){
   const li=document.createElement("li");li.dataset.id=t.id;
-  li.innerHTML='<div class="row"><button class="chk" aria-label="done">✓</button><span class="txt"></span><button class="del" aria-label="delete">✕</button></div>';
+  li.innerHTML='<div class="row"><button class="chk" aria-label="done">✓</button><span class="txt"></span><span class="dd"></span><button class="del" aria-label="delete">✕</button></div>';
   li.querySelector(".txt").textContent=t.text;
   li.classList.toggle("done",t.done);
-  list.append(li);
+  dd(li,t);list.append(li);
   li.animate([{opacity:0,transform:"translateY(10px) scale(.97)",maxHeight:"0px",marginBottom:"0px"},
               {opacity:1,transform:"none",maxHeight:"70px",marginBottom:"8px"}],
              {duration:400,delay,easing:"cubic-bezier(.2,.8,.2,1)",fill:"backwards"});
@@ -201,22 +270,22 @@ function leave(li){
 }
 function render(){
   list.innerHTML="";
-  S.tasks.filter(vis).forEach((t,i)=>row(t,Math.min(i,8)*45));
+  S.tasks.filter(vis).sort((a,b)=>(a.due||"9")<(b.due||"9")?-1:(a.due||"9")>(b.due||"9")?1:0).forEach((t,i)=>row(t,Math.min(i,8)*45));
   stats();empty();panel.scrollTop=0;
 }
 function add(){
   const v=inp.value.trim();
   if(!v){$(".add").animate([{borderColor:"#f87171"},{borderColor:"rgba(180,165,235,.28)"}],{duration:450});return}
-  const t={id:Date.now()+""+Math.random(),text:v,done:false};
-  S.tasks.push(t);inp.value="";save();
+  const t={id:Date.now()+""+Math.random(),text:v,done:false,due:$("#due").value};
+  S.tasks.push(t);inp.value="";$("#due").value="";dlab();save();if(t.due&&"Notification" in window&&Notification.permission==="default")Notification.requestPermission();
   if(S.filter==2)setFilter(0);
-  else{row(t);empty();stats();setTimeout(()=>panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"}),60)}
+  else if(t.due)render();else{row(t);empty();stats();setTimeout(()=>panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"}),60)}
 }
 list.addEventListener("click",e=>{
   const li=e.target.closest("li");if(!li)return;
   const t=S.tasks.find(x=>x.id==li.dataset.id);if(!t)return;
   if(e.target.closest(".chk")){
-    t.done=!t.done;li.classList.toggle("done",t.done);save();stats();
+    t.done=!t.done;li.classList.toggle("done",t.done);dd(li,t);save();stats();
     if(!vis(t))setTimeout(()=>leave(li),300);
   }else if(e.target.closest(".del")){
     S.tasks=S.tasks.filter(x=>x!==t);save();stats();leave(li);
@@ -234,9 +303,9 @@ $("#tabs").onclick=e=>{const b=e.target.closest("button");if(b)setFilter(+b.data
 
 function apply(){
   const T=STR[S.lang];
-  document.documentElement.lang=S.lang;document.title="My To Do List";inp.placeholder=T.ph;document.querySelectorAll("[data-p]").forEach(el=>el.placeholder=T[el.dataset.p]);const ek=$("#err").dataset.k;if(ek)$("#err").textContent=T[ek];
+  document.documentElement.lang=S.lang;document.title="MyNote";inp.placeholder=T.ph;document.querySelectorAll("[data-p]").forEach(el=>el.placeholder=T[el.dataset.p]);const ek=$("#err").dataset.k;if(ek)$("#err").textContent=T[ek];
   document.querySelectorAll("[data-i]").forEach(el=>el.textContent=T[el.dataset.i]);
-  stats();paint();
+  stats();paint();document.querySelectorAll("#list li").forEach(li=>{const t=S.tasks.find(x=>x.id==li.dataset.id);if(t)dd(li,t)});dlab();if(!$("#v-dl").hidden)renderDL();
 }
 function setLang(l){
   if(l===S.lang)return;
@@ -254,9 +323,9 @@ async function hash(pw,salt){const k=await crypto.subtle.importKey("raw",enc.enc
   return hex(await crypto.subtle.deriveBits({name:"PBKDF2",salt:enc.encode(salt),iterations:150000,hash:"SHA-256"},k,256))}
 let mode=0,busy=false;
 function swap(els){els.forEach(e=>e.style.opacity=0);setTimeout(()=>{apply();els.forEach(e=>e.style.opacity="")},160)}
-function err(k){
-  const e=$("#err");e.dataset.k=k||"";e.classList.toggle("show",!!k);
-  if(k){e.textContent=STR[S.lang][k];$("#card").animate([{transform:"none"},{transform:"translateX(-8px)"},{transform:"translateX(8px)"},{transform:"translateX(-4px)"},{transform:"none"}],{duration:380})}
+function err(k,ok){
+  const e=$("#err");e.dataset.k=k||"";e.classList.toggle("show",!!k);e.classList.toggle("ok",!!ok);
+  if(k){e.textContent=STR[S.lang][k];if(!ok)$("#card").animate([{transform:"none"},{transform:"translateX(-8px)"},{transform:"translateX(8px)"},{transform:"translateX(-4px)"},{transform:"none"}],{duration:380})}
 }
 function setMode(m){
   mode=m;$("#card").classList.toggle("signup",!!m);mark($("#mode"),m);
@@ -280,7 +349,7 @@ $("#f").onsubmit=async e=>{
       U[un]={salt,hash:await hash(pw,salt)};
       try{localStorage.setItem("tg_users",JSON.stringify(U));if(first&&S.legacy.length){localStorage.setItem("tg_t_"+un,JSON.stringify(S.legacy));S.legacy=[]}}catch(x){}
     }else{
-      const r=U[un];if(!r||r.hash!==await hash(pw,r.salt))return err("e5");
+      const r=U[un];if(!r)return err("e8");if(r.hash!==await hash(pw,r.salt))return err("e5");
     }
     enter(un);
   }finally{busy=false;$("#submit").classList.remove("busy")}
@@ -296,7 +365,7 @@ function enter(u){
   const a=$("#auth"),app=$("#app");
   a.classList.add("out");setTimeout(()=>a.hidden=true,520);
   app.classList.remove("locked","enter");void app.offsetWidth;app.classList.add("enter");
-  mark($("#tabs"),0);save();render();
+  mark($("#tabs"),0);save();render();go(1);setTimeout(()=>remind(true),900);
 }
 function showAuth(){
   const a=$("#auth");a.hidden=false;$("#app").classList.add("locked");$("#app").classList.remove("enter");
@@ -309,7 +378,7 @@ const dname=()=>P.name||S.user||STR[S.lang].guest;
 function paint(){
   const g=COLORS[P.c]||COLORS[0],t=(P.e||(dname()[0]||"?")).toUpperCase();
   [$("#av"),$("#pav")].forEach(a=>{a.textContent=t;a.style.background=`linear-gradient(135deg,${g[0]},${g[1]})`});
-  $("#lo").title=dname();
+  $("#lo").title=dname();greet();
 }
 function pick(){
   if(S.user)try{localStorage.setItem("tg_p_"+S.user,JSON.stringify(P))}catch(e){}
@@ -323,13 +392,13 @@ $("#sw").onclick=e=>{const b=e.target.closest("button");if(b){P.c=+b.dataset.c;p
 $("#em").onclick=e=>{const b=e.target.closest("button");if(b){P.e=EMO[+b.dataset.e];pick()}};
 $("#pn").oninput=e=>{P.name=e.target.value.trim();pick()};
 function openP(){
-  $("#pn").value=P.name;$("#pa1").hidden=S.guest;$("#pa2").hidden=!S.guest;pick();
+  $("#pn").value=P.name;$("#pa3").hidden=S.guest;$("#pa1").hidden=S.guest;$("#pa2").hidden=!S.guest;pick();
   const p=$("#prof");p.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>p.classList.remove("out")));
 }
 function closeP(){const p=$("#prof");p.classList.add("out");setTimeout(()=>p.hidden=true,420)}
 function toAuth(m){
   closeP();
-  setTimeout(()=>{S.user=null;S.guest=false;S.tasks=[];list.innerHTML="";$("#gn").hidden=true;$("#nb").value="";showAuth();if(mode!==m)setMode(m)},350);
+  setTimeout(()=>{S.user=null;S.guest=false;S.tasks=[];list.innerHTML="";$("#gn").hidden=true;$("#nb").value="";tmReset();showAuth();if(mode!==m)setMode(m)},350);
 }
 $("#lo").onclick=openP;$("#px").onclick=$("#pd").onclick=closeP;
 $("#prof").onclick=e=>{if(e.target.id==="prof")closeP()};
@@ -337,6 +406,152 @@ $("#guest").onclick=()=>enter(null);
 $("#gup").onclick=$("#pup").onclick=()=>toAuth(1);
 $("#pin").onclick=()=>toAuth(0);
 $("#plo").onclick=()=>{save();try{localStorage.removeItem("tg_session")}catch(e){}toAuth(0)};
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const fmt=v=>new Date(v+"T00:00:00").toLocaleDateString(S.lang==="id"?"id-ID":"en-US",{day:"numeric",month:"short"});
+function dd(li,t){const e=li.querySelector(".dd"),n=iso(new Date());e.textContent=t.due?fmt(t.due):"";e.className="dd"+(t.due&&!t.done?(t.due<n?" od":t.due===n?" td":""):"")}
+function dlab(){const v=$("#due").value;$("#dl").textContent=v?fmt(v):"";$("#dbtn").classList.toggle("set",!!v)}
+$("#due").onchange=dlab;$("#due").addEventListener("click",()=>{try{$("#due").showPicker()}catch(e){}});
+function greet(){
+  const h=new Date().getHours(),id=S.lang==="id";
+  const g=id?["Selamat pagi","Selamat siang","Selamat sore","Selamat malam"][h>=5&&h<11?0:h>=11&&h<15?1:h>=15&&h<18?2:3]
+            :["Good morning","Good afternoon","Good evening"][h>=5&&h<12?0:h>=12&&h<17?1:2];
+  const el=$("#hi"),b=document.createElement("b");b.textContent=dname();el.textContent=g+", ";el.append(b);
+}
+setInterval(greet,60000);
+let tt;
+function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;t.classList.remove("out");void t.offsetWidth;clearTimeout(tt);
+  tt=setTimeout(()=>{t.classList.add("out");setTimeout(()=>t.hidden=true,400)},4500)}
+function remind(first){
+  const t0=iso(new Date());let td=0,od=0;
+  S.tasks.forEach(t=>{if(t.done||!t.due)return;if(t.due===t0)td++;else if(t.due<t0)od++});
+  if(!td&&!od)return;
+  const m=STR[S.lang].r1.replace("{t}",td).replace("{o}",od);
+  if(first)toast(m);
+  if("Notification" in window&&Notification.permission==="granted"&&document.hidden)try{new Notification("MyNote",{body:m})}catch(e){}
+}
+setInterval(()=>{if(S.user||S.guest)remind(false)},30*60000);
+function exportB(){
+  const u=S.user,d={app:"my-to-do-list",v:1,user:u,acct:users()[u],profile:P,tasks:S.tasks,note:$("#nb").value};
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"application/json"}));
+  a.download="my-to-do-list-"+u+".json";document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);toast(STR[S.lang].xm);
+}
+function importB(txt){
+  try{
+    const d=JSON.parse(txt),U=users();
+    if(d.app!=="my-to-do-list"||!/^[a-z0-9_.]{3,20}$/.test(d.user||"")||!d.acct||!d.acct.salt||!d.acct.hash||!Array.isArray(d.tasks))return null;
+    if(U[d.user]&&!confirm(STR[S.lang].cf))return "";
+    U[d.user]={salt:String(d.acct.salt),hash:String(d.acct.hash)};
+    const T=d.tasks.map(t=>({id:String(t.id||Date.now()+""+Math.random()),text:String(t.text||"").slice(0,120),done:!!t.done,due:/^\d{4}-\d\d-\d\d$/.test(t.due||"")?t.due:""}));
+    localStorage.setItem("tg_users",JSON.stringify(U));localStorage.setItem("tg_t_"+d.user,JSON.stringify(T));
+    localStorage.setItem("tg_p_"+d.user,JSON.stringify(d.profile||{}));localStorage.setItem("tg_n_"+d.user,String(d.note||"").slice(0,4000));
+    return d.user;
+  }catch(e){return null}
+}
+let fsrc="";
+$("#pex").onclick=exportB;
+$("#rst").onclick=()=>{fsrc="auth";$("#fi").click()};
+$("#pim").onclick=()=>{fsrc="prof";$("#fi").click()};
+$("#fi").onchange=async e=>{
+  const f=e.target.files[0];e.target.value="";if(!f)return;
+  const u=importB(await f.text());
+  if(u==="")return;
+  if(!u)return fsrc==="auth"?err("e7"):toast(STR[S.lang].e7);
+  if(fsrc==="auth"){$("#u").value=u;if(mode)setMode(0);err("m1",1);$("#p").focus()}
+  else{closeP();if(u===S.user)enter(u);toast(STR[S.lang].m2)}
+};
+function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem("tg_theme",t)}catch(e){}
+  document.querySelector('meta[name="theme-color"]').content=t==="light"?"#f1f0f6":"#0a0a0c"}
+document.querySelectorAll(".thb").forEach(b=>b.onclick=()=>{const r=document.documentElement;r.classList.add("tt");setTimeout(()=>r.classList.remove("tt"),600);setTheme(r.dataset.theme==="light"?"dark":"light")});
+setTheme(document.documentElement.dataset.theme||"dark");
+
+let V=1,dirty=false;
+function go(i){
+  const prev=V;V=i;mark($("#nav"),i);
+  ["#v-dl","#main","#v-tm"].forEach((id,k)=>{const e=$(id);
+    if(k===i){e.style.setProperty("--dx",(i>prev?28:-28)+"px");e.hidden=false;e.classList.remove("vin");void e.offsetWidth;e.classList.add("vin")}else e.hidden=true});
+  if(i===0)renderDL();
+  if(i===1&&dirty){render();dirty=false}
+}
+$("#nav").onclick=e=>{const b=e.target.closest("button");if(b&&+b.dataset.v!==V)go(+b.dataset.v)};
+const loc=()=>S.lang==="id"?"id-ID":"en-US";
+const days=v=>Math.round((new Date(v+"T00:00:00")-new Date(iso(new Date())+"T00:00:00"))/864e5);
+function cd(v){const n=days(v),id=S.lang==="id";
+  return n===0?(id?"Hari ini":"Today"):n===1?(id?"Besok":"Tomorrow"):n>1?(id?n+" hari lagi":"in "+n+" days"):(id?"Terlambat "+(-n)+" hari":(-n)+"d overdue")}
+function dlrow(t){
+  const li=document.createElement("li"),n=days(t.due);li.dataset.id=t.id;
+  li.innerHTML='<div class="row dr"><button class="chk" aria-label="done">✓</button><div class="tx"><span class="txt"></span><small class="mt"></small></div><span class="dd"></span><button class="del" aria-label="delete">✕</button></div>';
+  li.querySelector(".txt").textContent=t.text;
+  li.querySelector(".mt").textContent=new Date(t.due+"T00:00:00").toLocaleDateString(loc(),{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+  const e=li.querySelector(".dd");e.textContent=cd(t.due);e.className="dd"+(n<0?" od":n===0?" td":"");
+  return li;
+}
+function renderDL(){
+  const box=$("#dlist");box.innerHTML="";
+  const L=S.tasks.filter(t=>t.due&&!t.done).sort((a,b)=>a.due<b.due?-1:a.due>b.due?1:0),g=[[],[],[],[]];
+  L.forEach(t=>{const n=days(t.due);g[n<0?0:n===0?1:n<=7?2:3].push(t)});
+  let k=0;
+  g.forEach((arr,i)=>{if(!arr.length)return;
+    const h=document.createElement("h3"),ul=document.createElement("ul");h.className="sec";h.textContent=STR[S.lang]["dg"+i];
+    arr.forEach(t=>{const li=dlrow(t);li.style.animationDelay=Math.min(k++,10)*50+"ms";ul.append(li)});
+    box.append(h,ul)});
+  $("#dempty").classList.toggle("show",!L.length);
+}
+function dlClean(){$("#dlist").querySelectorAll("ul").forEach(u=>{if(!u.children.length){u.previousElementSibling.remove();u.remove()}});$("#dempty").classList.toggle("show",!$("#dlist").children.length)}
+function addDL(){
+  const v=$("#dt").value.trim(),d=$("#dd2").value;
+  if(!v||!d){$(".dlf").animate([{borderColor:"#f87171"},{borderColor:"rgba(255,255,255,.11)"}],{duration:450});return}
+  S.tasks.push({id:Date.now()+""+Math.random(),text:v,done:false,due:d});
+  $("#dt").value="";$("#dd2").value="";save();stats();dirty=true;renderDL();
+  if("Notification" in window&&Notification.permission==="default")Notification.requestPermission();
+}
+$("#dgo").onclick=addDL;$("#dt").addEventListener("keydown",e=>{if(e.key==="Enter")addDL()});
+$("#dd2").addEventListener("click",()=>{try{$("#dd2").showPicker()}catch(e){}});
+$("#dpanel").addEventListener("click",e=>{
+  const li=e.target.closest("li");if(!li)return;
+  const t=S.tasks.find(x=>x.id==li.dataset.id);if(!t)return;
+  if(e.target.closest(".chk")){t.done=true;li.classList.add("done");setTimeout(()=>leave(li),250)}
+  else if(e.target.closest(".del")){S.tasks=S.tasks.filter(x=>x!==t);leave(li)}
+  else return;
+  save();stats();dirty=true;setTimeout(dlClean,650);
+});
+
+const RC=2*Math.PI*96;let T={dur:1500,left:1500,run:false,end:0},AC;
+const tf=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60,p=n=>String(n).padStart(2,"0");return(h?h+":":"")+p(m)+":"+p(x)};
+const RT="stroke-dashoffset .6s cubic-bezier(.3,.9,.3,1)";
+function prs(){$("#pre").querySelectorAll("button").forEach(b=>b.classList.toggle("on",+b.dataset.m*60===T.dur))}
+function tmDraw(){
+  const l=T.run?Math.max(0,(T.end-Date.now())/1000):T.left;
+  $("#tmt").textContent=tf(Math.ceil(l));$("#ring").style.strokeDashoffset=RC*(1-l/T.dur);
+  document.title=T.run?tf(Math.ceil(l))+" · MyNote":"MyNote";
+  if(T.run&&l<=0)tmDone();
+}
+function tmLoop(){if(!T.run)return;tmDraw();requestAnimationFrame(tmLoop)}
+function tmBtn(){const k=T.run?"tm1":"tm0",b=$("#tgo");b.dataset.i=k;b.textContent=STR[S.lang][k];$("#tmm").disabled=T.run}
+function tmSet(m){if(T.run)return;m=Math.max(1,Math.min(999,Math.round(+m)||1));T.dur=T.left=m*60;$("#tmm").value=m;$("#ring").style.transition=RT;tmDraw();prs()}
+function tmReset(){T.run=false;T.left=T.dur;$("#ring").style.transition=RT;tmDraw();tmBtn()}
+function tmToggle(){
+  if(!T.run){
+    try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume()}catch(e){}
+    if(T.left<=0)T.left=T.dur;T.run=true;T.end=Date.now()+T.left*1000;$("#ring").style.transition="none";tmLoop();
+    if("Notification" in window&&Notification.permission==="default")Notification.requestPermission();
+  }else{T.left=Math.max(0,(T.end-Date.now())/1000);T.run=false}
+  tmBtn();
+}
+function beep(){if(!AC)return;const n=AC.currentTime;[0,.3,.6].forEach(o=>{const s=AC.createOscillator(),g=AC.createGain();s.frequency.value=880;s.connect(g);g.connect(AC.destination);
+  g.gain.setValueAtTime(.0001,n+o);g.gain.exponentialRampToValueAtTime(.25,n+o+.02);g.gain.exponentialRampToValueAtTime(.0001,n+o+.24);s.start(n+o);s.stop(n+o+.26)})}
+function tmDone(){
+  T.run=false;T.left=T.dur;tmBtn();try{beep()}catch(e){}
+  const m=STR[S.lang].tmd+($("#tml").value?" — "+$("#tml").value:"");toast(m);
+  if("Notification" in window&&Notification.permission==="granted"&&document.hidden)try{new Notification("MyNote",{body:m})}catch(e){}
+  $("#ring").style.transition=RT;tmDraw();const w=$("#tmw");w.classList.remove("pulse");void w.offsetWidth;w.classList.add("pulse");
+}
+$("#pre").onclick=e=>{const b=e.target.closest("button");if(b)tmSet(+b.dataset.m)};
+$("#tmm").oninput=e=>{if(!T.run&&e.target.value){T.dur=T.left=Math.max(1,Math.min(999,+e.target.value||1))*60;tmDraw();prs()}};
+$("#tml").oninput=e=>$("#tmlab").textContent=e.target.value;
+$("#tgo").onclick=tmToggle;$("#trs").onclick=tmReset;
+setInterval(()=>{if(T.run)tmDraw()},500);
+$("#ring").style.strokeDasharray=RC;tmDraw();tmBtn();prs();
 let ntm;
 function note(k){const e=$("#ns");e.dataset.i=k;e.textContent=STR[S.lang][k]}
 function loadNote(u){let v="";if(u)try{v=localStorage.getItem("tg_n_"+u)||""}catch(e){}$("#nb").value=v;note(u?"ns1":"ns2")}
